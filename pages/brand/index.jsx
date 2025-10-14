@@ -2,24 +2,29 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Reviews from "./Reviews";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import useUserStore from "@/store/useUserStore";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import mongoose from "mongoose";
 import Creator from "@/model/Creator";
 
-const index = ({ creators }) => {
+const BrandHome = ({ creators }) => {
+  const router = useRouter();
   const { user, isLoggedIn } = useUserStore();
   const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
-    // Check if user has completed profile setup
-    if (isLoggedIn && user) {
-      // Check if essential profile fields are missing
+    // Check if user is logged in and redirect to dashboard
+    if (isLoggedIn && user && user.role === "brand") {
+      // Check if user has completed profile setup
       if (!user.profileImage || !user.city || !user.state) {
         setIsNewUser(true);
+      } else {
+        // Redirect to dashboard if profile is complete
+        router.push("/brand/dashboard");
       }
     }
-  }, [isLoggedIn, user]);
+  }, [isLoggedIn, user, router]);
 
   return (
     <div className="min-h-screen">
@@ -146,7 +151,7 @@ const index = ({ creators }) => {
   );
 };
 
-export default index;
+export default BrandHome;
 
 export async function getServerSideProps() {
   if (!mongoose.connections[0].readyState) {

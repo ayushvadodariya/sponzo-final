@@ -98,7 +98,7 @@ const Navbar = () => {
             ) : (
               <>
                 <Link
-                  href={user.role === "creator" ? "/creator" : "/brand"}
+                  href={user.role === "creator" ? "/creator" : "/brand/dashboard"}
                   className={buttonVariants({
                     variant: "ghost",
                     size: "sm",
