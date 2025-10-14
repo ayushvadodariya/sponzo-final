@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import useUserStore from "@/store/useUserStore";
 
 export default function Example() {
   const router = useRouter();
+  const { setUser } = useUserStore();
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
@@ -45,19 +47,28 @@ export default function Example() {
             progress: undefined,
             theme: "light",
           });
+
+          const userData = {
+            email: data.email,
+            name: data.name,
+            username: data.username,
+            role: data.role,
+            token: data.token,
+          };
+
+          // Store in Zustand
+          setUser(userData);
+
+          // For backward compatibility
           if (typeof window !== "undefined") {
-            localStorage.setItem("user", JSON.stringify({
-              email: data.email,
-              role: data.role,
-              token: data.token,
-            }));
+            localStorage.setItem("user", JSON.stringify(userData));
           }
           setTimeout(() => {
             if (data.role === "brand") {
               router.push("/brand");
-            }else if (data.role === "creator") {
+            } else if (data.role === "creator") {
               router.push("/creator");
-            }else {
+            } else {
               router.push("/");
             }
           }, 1000);

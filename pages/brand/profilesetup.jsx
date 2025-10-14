@@ -3,76 +3,163 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
+import useUserStore from "@/store/useUserStore";
+import { toast } from "react-toastify";
+
 export default function Example() {
+  const router = useRouter();
+  const { user, setUser } = useUserStore();
   const [userInfo, setUserInfo] = useState({
     name: "",
     email: "",
-    password: "",
-    role: "creator",
+    username: "",
+    role: "brand",
     profileImage: "",
+    apartment: "",
+    officeAddress: "",
+    city: "",
+    state: "",
+    pinCode: ""
   });
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserInfo({
+      ...userInfo,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
     if (user) {
-      fetch("/api/creator/getcreator", {
+      fetch("/api/brand/profileupdate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Basic ${btoa(user.email + ":" + user.token)}`,
+          "Authorization": `Basic ${btoa("junaid:2002")}`,
+        },
+        body: JSON.stringify({
+          ...userInfo,
+          email: user.email
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            toast.success("Profile Updated Successfully");
+
+            // Update the user data in Zustand store with updated profile info
+            const updatedUser = {
+              ...user,
+              ...userInfo
+            };
+            setUser(updatedUser);
+
+            // Update localStorage
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+
+            // Redirect to brand dashboard
+            setTimeout(() => {
+              router.push("/brand");
+            }, 1000);
+          } else {
+            toast.error(data.error || "Failed to update profile");
+          }
+        })
+        .catch(err => {
+          toast.error("An error occurred. Please try again.");
+          console.error(err);
+        });
+    }
+  };
+
+  useEffect(() => {
+    // Load user data from Zustand store
+    if (user) {
+      setUserInfo({
+        name: user.name || "",
+        email: user.email || "",
+        username: user.username || "",
+        role: user.role || "brand",
+        profileImage: user.profileImage || "",
+        apartment: user.apartment || "",
+        officeAddress: user.officeAddress || "",
+        city: user.city || "",
+        state: user.state || "",
+        pinCode: user.pinCode || ""
+      });
+    }
+
+    // Also try to get brand profile from API if it exists
+    if (user && user.email) {
+      fetch("/api/brand/getbrand", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${btoa("junaid:2002")}`,
         },
         body: JSON.stringify({ email: user.email }),
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-          setUserInfo(data);
+          if (data.success && data.brand) {
+            // Merge the API data with user data
+            setUserInfo(prevState => ({
+              ...prevState,
+              ...data.brand
+            }));
+          }
+        })
+        .catch(err => {
+          console.error("Failed to fetch brand profile:", err);
         });
     }
-  }, []);
+  }, [user, setUser]);
+
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <div className="space-y-6 p-10">
-        <div className="  px-4 py-5 sm:rounded-lg sm:p-6">
+        <div className="px-4 py-5 sm:rounded-lg sm:p-6 bg-white shadow">
           <div className="md:grid md:grid-cols-3 md:gap-6">
             <div className="md:col-span-1">
               <h3 className="text-lg font-medium leading-6 text-gray-900">
                 Brand Information
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Use a permanent address where you can receive mails.
+                Complete your brand profile to help influencers understand your business better.
               </p>
             </div>
             <div className="mt-5 md:mt-0 md:col-span-2">
-              <form action="#" method="POST">
-                <div className="flex w-full">
-                  <div className="w-1/2 flex gap-5  items-center justify-between px-20 ">
-                    <Image
-                      src={userInfo.profileImage}
-                      width={200}
-                      height={200}
-                      alt=""
-                      className="w-28 h-28 object-cover rounded-full mx-auto m-2 bg-gray-300"
-                    />
+              <form onSubmit={handleSubmit}>
+                <div className="flex flex-col md:flex-row gap-6 mb-6">
+                  <div className="w-full md:w-1/3 flex flex-col items-center justify-center">
+                    <div className="mb-4">
+                      <Image
+                        src={userInfo.profileImage || "https://via.placeholder.com/200x200?text=Brand+Logo"}
+                        width={120}
+                        height={120}
+                        alt="Brand Logo"
+                        className="rounded-full object-cover w-28 h-28 border-2 border-gray-200"
+                      />
+                    </div>
                     <UploadButton
                       endpoint="imageUploader"
-                      className=""
                       onClientUploadComplete={(res) => {
-                        // Do something with the response
-                        console.log("Files: ", res);
                         setUserInfo({
                           ...userInfo,
                           profileImage: res[0].fileUrl,
                         });
-                        // alert("Upload Completed");
                       }}
                       onUploadError={(error) => {
-                        // Do something with the error.
-                        alert(`ERROR! ${error.message}`);
+                        toast.error(`Upload error: ${error.message}`);
                       }}
                     />
                   </div>
-                  <div className="w-1/2">
-                    <div className="col-span-6 sm:col-span-3">
+                  <div className="w-full md:w-2/3 space-y-4">
+                    <div>
                       <label
                         htmlFor="name"
                         className="block text-sm font-medium text-gray-700"
@@ -83,74 +170,87 @@ export default function Example() {
                         type="text"
                         name="name"
                         id="name"
-                        autoComplete="name"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        value={userInfo.name}
+                        onChange={handleChange}
+                        required
+                        className="mt-1"
                       />
                     </div>
 
-                    <div className="col-span-6 sm:col-span-3">
+                    <div>
                       <label
-                        htmlFor="email-address"
+                        htmlFor="email"
                         className="block text-sm font-medium text-gray-700"
                       >
                         Email address
                       </label>
                       <Input
+                        type="email"
+                        name="email"
+                        id="email"
+                        value={userInfo.email}
+                        onChange={handleChange}
+                        disabled
+                        className="mt-1 bg-gray-100 cursor-not-allowed"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="username"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Username
+                      </label>
+                      <Input
                         type="text"
-                        name="email-address"
-                        id="email-address"
-                        autoComplete="email"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        name="username"
+                        id="username"
+                        value={userInfo.username}
+                        onChange={handleChange}
+                        disabled
+                        className="mt-1 bg-gray-100 cursor-not-allowed"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-6 gap-6">
-                  {/* <div className="col-span-6 sm:col-span-3">
-                                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-Phone
-                                  </label>
-                                  <input
-                                      type="text"
-                                      name="phone"
-                                      id="phone"
-                                      autoComplete="email"
-                                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                  />
-                              </div> */}
 
+                <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mt-6">
                   <div className="col-span-6">
                     <label
-                      htmlFor="street-address"
+                      htmlFor="apartment"
                       className="block text-sm font-medium text-gray-700"
                     >
                       Apartment, suite, etc.
                     </label>
                     <Input
                       type="text"
-                      name="street-address"
-                      id="street-address"
-                      autoComplete="street-address"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                      name="apartment"
+                      id="apartment"
+                      value={userInfo.apartment}
+                      onChange={handleChange}
+                      className="mt-1"
                     />
                   </div>
+
                   <div className="col-span-6">
                     <label
-                      htmlFor="street-address"
+                      htmlFor="officeAddress"
                       className="block text-sm font-medium text-gray-700"
                     >
                       Office Address
                     </label>
                     <Input
                       type="text"
-                      name="street-address"
-                      id="street-address"
-                      autoComplete="street-address"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                      name="officeAddress"
+                      id="officeAddress"
+                      value={userInfo.officeAddress}
+                      onChange={handleChange}
+                      className="mt-1"
                     />
                   </div>
 
-                  <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                  <div className="col-span-6 md:col-span-2">
                     <label
                       htmlFor="city"
                       className="block text-sm font-medium text-gray-700"
@@ -161,12 +261,13 @@ Phone
                       type="text"
                       name="city"
                       id="city"
-                      autoComplete="address-level2"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                      value={userInfo.city}
+                      onChange={handleChange}
+                      className="mt-1"
                     />
                   </div>
 
-                  <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                  <div className="col-span-6 md:col-span-2">
                     <label
                       htmlFor="state"
                       className="block text-sm font-medium text-gray-700"
@@ -177,10 +278,11 @@ Phone
                       <select
                         name="state"
                         id="state"
-                        required
-                        autoComplete="shipping address-level1"
+                        value={userInfo.state}
+                        onChange={handleChange}
                         className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       >
+                        <option value="">Select a state</option>
                         <option value="AN">Andaman and Nicobar Islands</option>
                         <option value="AP">Andhra Pradesh</option>
                         <option value="AR">Arunachal Pradesh</option>
@@ -222,28 +324,30 @@ Phone
                     </div>
                   </div>
 
-                  <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                  <div className="col-span-6 md:col-span-2">
                     <label
-                      htmlFor="postal-code"
+                      htmlFor="pinCode"
                       className="block text-sm font-medium text-gray-700"
                     >
                       PIN Code
                     </label>
-                    <input
+                    <Input
                       type="text"
-                      name="postal-code"
-                      id="postal-code"
-                      autoComplete="postal-code"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                      name="pinCode"
+                      id="pinCode"
+                      value={userInfo.pinCode}
+                      onChange={handleChange}
+                      className="mt-1"
                     />
                   </div>
                 </div>
-                <div className="flex justify-start my-4">
+
+                <div className="flex justify-start mt-8">
                   <Button
                     type="submit"
-                    className=" inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex justify-center px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
                   >
-                    Save
+                    Save Profile
                   </Button>
                 </div>
               </form>

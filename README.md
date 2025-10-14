@@ -3,7 +3,7 @@
 - [Problem Statement](#problem-statement)
 - [Challenges faced by Influencers](#for-influencers)
 - [Challenges faced by Brands](#brands-challenges)
-- [How Influenzar (our platform) Solves These Challenges](#how-influenzar-solves-these-challenges)
+- [How SPONZO (our platform) Solves These Challenges](#how-SPONZO-solves-these-challenges)
 - [Features (Brands)](#for-brands)
 - [Features (Creators)](#for-creators)
 - [User Sign-Up Options](#user-sign-up-options)
@@ -14,7 +14,7 @@
 
 **Demo Video**: https://youtu.be/d8hstLFP1Js
 
-**Live Site**: https://influenzar.vercel.app
+**Live Site**: https://SPONZO.vercel.app
 
 **Github**:https://github.com/theonlyjunaid/Influencer-marketplace
 
@@ -24,9 +24,9 @@
 
 ## Problem Statement
 
-**Influenzar**: **A Marketplace Connecting Influencers and Brands**
+**SPONZO**: **A Marketplace Connecting Influencers and Brands**
 
-Influenzar addresses the challenges faced by both influencers and brands in the ever-evolving landscape of digital marketing. The platform serves as a centralized marketplace, offering a solution that enables seamless collaboration between influencers and brands.
+SPONZO addresses the challenges faced by both influencers and brands in the ever-evolving landscape of digital marketing. The platform serves as a centralized marketplace, offering a solution that enables seamless collaboration between influencers and brands.
 
 ## The Challenge
 
@@ -44,9 +44,9 @@ Influenzar addresses the challenges faced by both influencers and brands in the 
 
 [move back to table of content](#table-of-contents)
 
-## How Influenzar Solves These Challenges
+## How SPONZO Solves These Challenges
 
-Influenzar offers a comprehensive solution by providing a platform where influencers can effectively showcase their services while brands can seamlessly discover, connect, and collaborate with suitable influencers. The platform facilitates the sale of influencer services at competitive market prices, fostering beneficial collaborations between creators and brands.
+SPONZO offers a comprehensive solution by providing a platform where influencers can effectively showcase their services while brands can seamlessly discover, connect, and collaborate with suitable influencers. The platform facilitates the sale of influencer services at competitive market prices, fostering beneficial collaborations between creators and brands.
 
 [move back to table of content](#table-of-contents)
 

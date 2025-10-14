@@ -29,7 +29,8 @@
     "sharp": "^0.32.6",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "uploadthing": "^5.7.4"
+    "uploadthing": "^5.7.4",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

@@ -1,16 +1,19 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import useUserStore from "@/store/useUserStore";
 
 export default function Example() {
     const router = useRouter();
+    const { setUser } = useUserStore();
     const [userInfo, setUserInfo] = useState({
         name: "",
         email: "",
         password: "",
-        role:"brand"
+        role: "brand",
+        username: ""
     })
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -46,7 +49,15 @@ export default function Example() {
                         theme: "light",
                     });
                     if (typeof window !== "undefined") {
-                        localStorage.setItem("user", JSON.stringify(data.token))
+                        const userData = {
+                            email: data.email,
+                            name: data.name,
+                            username: data.username,
+                            role: data.role,
+                            token: data.token
+                        };
+                        localStorage.setItem("user", JSON.stringify(userData));
+                        setUser(userData);
                     }
                     setTimeout(() => {
                         router.push("/brand")
@@ -66,37 +77,46 @@ export default function Example() {
             }
             )
     }
-  
+
     return (
-        <> 
-         <ToastContainer
-            position="bottom-left"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-        />
+        <>
+            <ToastContainer
+                position="bottom-left"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             {/* <Navbar /> */}
             <div className="h-max text-center py-20">
                 <h1 className="text-3xl font-semibold mt-10">
-join as a brand                </h1>
+                    join as a brand                </h1>
 
                 <div className=" w-full ">
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5 w-80 my-10 mx-auto">
 
-                        
+                        <input
+                            onChange={handleChange}
+                            id="username"
+                            name="username"
+                            type="text"
+                            value={userInfo.username}
+                            required
+                            className="border-2 border-gray-300 p-2 rounded-lg"
+                            placeholder="Username"
+                        />
                         <input
                             onChange={handleChange}
                             id="text"
                             name="name"
                             type="text"
                             value={userInfo.name}
-                         
+
                             className="border-2 border-gray-300 p-2 rounded-lg"
                             placeholder="Full Name"
 
