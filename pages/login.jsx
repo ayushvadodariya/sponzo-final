@@ -54,6 +54,17 @@ export default function Example() {
             username: data.username,
             role: data.role,
             token: data.token,
+            // Include profile data from the response
+            profileImage: data.profileImage || "",
+            bannerImage: data.bannerImage || "",
+            phone: data.phone || "",
+            city: data.city || "",
+            state: data.state || "",
+            category: data.category || "",
+            description: data.description || "",
+            location: data.location || "",
+            platforms: data.platforms || [],
+            packages: data.packages || []
           };
 
           // Store in Zustand
