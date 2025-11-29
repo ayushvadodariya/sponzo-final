@@ -138,7 +138,7 @@ export default function Example() {
                   <div className="w-full md:w-1/3 flex flex-col items-center justify-center">
                     <div className="mb-4">
                       <Image
-                        src={userInfo.profileImage || "https://via.placeholder.com/200x200?text=Brand+Logo"}
+                        src={userInfo.profileImage || "/placeholder.svg"}
                         width={120}
                         height={120}
                         alt="Brand Logo"

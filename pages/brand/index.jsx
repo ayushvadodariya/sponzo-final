@@ -70,7 +70,7 @@ const BrandHome = ({ creators }) => {
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <div className="relative h-48">
                       <Image
-                        src={creator.profileImage || "https://via.placeholder.com/500x500?text=No+Image"}
+                        src={creator.profileImage || "/placeholder.svg"}
                         alt={creator.name}
                         layout="fill"
                         objectFit="cover"
@@ -114,7 +114,7 @@ const BrandHome = ({ creators }) => {
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <div className="relative h-48">
                       <Image
-                        src={creator.profileImage || "https://via.placeholder.com/500x500?text=No+Image"}
+                        src={creator.profileImage || "/placeholder.svg"}
                         alt={creator.name}
                         layout="fill"
                         objectFit="cover"

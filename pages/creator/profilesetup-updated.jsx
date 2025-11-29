@@ -450,7 +450,7 @@ export default function CreatorProfileSetup() {
               <div className="mb-6 flex flex-col items-center">
                 <div className="mb-4">
                   <Image
-                    src={userInfo.profileImage || "https://via.placeholder.com/150?text=Profile"}
+                    src={userInfo.profileImage || "/placeholder.svg"}
                     width={120}
                     height={120}
                     alt="Profile"

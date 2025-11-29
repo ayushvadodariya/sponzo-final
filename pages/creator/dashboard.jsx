@@ -140,7 +140,7 @@ const CreatorDashboard = () => {
               <div className="flex items-end">
                 <div className="mr-6">
                   <Image
-                    src={creatorData.profileImage || "https://via.placeholder.com/150?text=Profile"}
+                    src={creatorData.profileImage || "/placeholder.svg"}
                     width={120}
                     height={120}
                     alt="Profile"

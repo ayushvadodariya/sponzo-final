@@ -106,6 +106,15 @@ const Navbar = () => {
                 >
                   Dashboard
                 </Link>
+                <Link
+                  href={user.role === "creator" ? "/creator/campaigns" : "/brand/campaigns"}
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Campaigns
+                </Link>
                 <div className="relative" ref={menuRef}>
                   <div
                     className="cursor-pointer flex items-center gap-2"
