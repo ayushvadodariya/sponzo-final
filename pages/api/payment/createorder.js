@@ -29,10 +29,19 @@ const createOrder = async (req, res) => {
                 // Calculate 50% of budget (convert to paise for Razorpay)
                 const amount = Math.round((campaign.budget * 0.5) * 100);
 
+                // Check if Razorpay keys are set
+                const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+                const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+                
+                if (!keyId || !keySecret) {
+                    console.error("Razorpay keys missing:", { keyId: !!keyId, keySecret: !!keySecret });
+                    return res.status(500).json({ success: false, error: 'Payment gateway not configured' });
+                }
+
                 // Initialize Razorpay
                 const razorpay = new Razorpay({
-                    key_id: process.env.RAZORPAY_KEY_ID,
-                    key_secret: process.env.RAZORPAY_KEY_SECRET,
+                    key_id: keyId,
+                    key_secret: keySecret,
                 });
 
                 // Create order - receipt must be max 40 chars

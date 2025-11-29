@@ -2,49 +2,41 @@
 import { UploadButton } from "@/utils/uploadthing";
 import { useState,useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
+
 export default function Example() {
- 
+  const router = useRouter();
 
 const [userinfo, setUserinfo] = useState({
-  name: "junaid malik",
-  username: "junaidmalik9069",
-  email: "junaidmalik9069@gmail.com",
+  name: "",
+  username: "",
+  email: "",
   role: "creator",
   profileImage: "",
   bannerImage: "",
-  phone: "1234567890",
-  city: "New Delhi",
-  state: "Delhi",
-  category: "fashion",
-  description: "I am a fashion blogger",
+  phone: "",
+  city: "",
+  state: "",
+  category: "",
+  description: "",
   platforms: [
     {
       platform: "instagram",
-      followers: "1000",
-      profile: "https://www.instagram.com/junaidmalik9069/",
+      followers: "",
+      profile: "",
     },
     {
       platform: "youtube",
-      followers: "1000",
-      profile:"https://www.facebook.com/junaidmalik9069/"
+      followers: "",
+      profile: ""
     },
     {
       platform: "facebook",
-      followers: "1000",
-      profile:"https://www.youtube.com/@junaidmalik9069/"
+      followers: "",
+      profile: ""
     },
   ],
-  packages: [
-    {
-      platform: "instagram",
-      followers: "1000",
-      price: "1000",
-      title:"fwkjsdh,j",
-      description: "I will post your product on my instagram",
-    },
- 
-  ],
-
+  packages: [],
 })
 console.log(userinfo)
 
@@ -52,22 +44,36 @@ console.log(userinfo)
 console.log(userinfo)
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      fetch("/api/creator/getcreator", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${btoa("junaid:2002")}`,
-        },
-        body: JSON.stringify({ email: user.email }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserinfo(data.creator);
-        });
+    if (!user) {
+      router.push("/login");
+      return;
     }
-  }, []);
+    
+    // Set basic info from localStorage first
+    setUserinfo(prev => ({
+      ...prev,
+      name: user.name || prev.name,
+      username: user.username || prev.username,
+      email: user.email || prev.email,
+    }));
+    
+    // Then fetch full profile from API
+    fetch("/api/creator/getcreator", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${btoa("junaid:2002")}`,
+      },
+      body: JSON.stringify({ email: user.email }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success && data.creator) {
+          setUserinfo(data.creator);
+        }
+      });
+  }, [router]);
   const handleProfileImage = async (email,image) => {
     await fetch("/api/creator/profileImageupdate", {
       method: "POST",

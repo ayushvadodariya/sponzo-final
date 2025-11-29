@@ -30,47 +30,54 @@ const signup = async (req, res) => {
                     return res.status(400).json({ success: false, error: 'Username already exists' });
                 }
 
+                // Check if Creator/Brand with this email or username already exists
+                if (role === 'creator') {
+                    let existingCreator = await Creator.findOne({ $or: [{ email: email }, { username: username }] });
+                    if (existingCreator) {
+                        return res.status(400).json({ success: false, error: 'Creator with this email or username already exists' });
+                    }
+                } else if (role === 'brand') {
+                    let existingBrand = await Brand.findOne({ email: email });
+                    if (existingBrand) {
+                        return res.status(400).json({ success: false, error: 'Brand with this email already exists' });
+                    }
+                }
+
                 // Create user in User collection (for authentication)
                 let u = new User({ name, email, username, password: CryptoJS.AES.encrypt(password, process.env.SECRET_KEY).toString(), role });
                 await u.save();
 
                 // Also create Brand or Creator record (for profile data)
                 if (role === 'brand') {
-                    let existingBrand = await Brand.findOne({ email: email });
-                    if (!existingBrand) {
-                        await Brand.create({
-                            name: name,
-                            email: email,
-                            role: "brand",
-                            profileImage: "",
-                            category: [],
-                            location: "",
-                            description: ""
-                        });
-                    }
+                    await Brand.create({
+                        name: name,
+                        email: email,
+                        role: "brand",
+                        profileImage: "",
+                        category: [],
+                        location: "",
+                        description: ""
+                    });
                 } else if (role === 'creator') {
-                    let existingCreator = await Creator.findOne({ email: email });
-                    if (!existingCreator) {
-                        await Creator.create({
-                            name: name,
-                            email: email,
-                            username: username,
-                            role: "creator",
-                            phone: "",
-                            profileImage: "",
-                            city: "",
-                            state: "",
-                            category: "",
-                            platforms: [
-                                { platform: "instagram", followers: "", profile: "" },
-                                { platform: "youtube", followers: "", profile: "" },
-                                { platform: "facebook", followers: "", profile: "" }
-                            ],
-                            bannerImage: "",
-                            description: "",
-                            packages: []
-                        });
-                    }
+                    await Creator.create({
+                        name: name,
+                        email: email,
+                        username: username,
+                        role: "creator",
+                        phone: "",
+                        profileImage: "",
+                        city: "",
+                        state: "",
+                        category: "",
+                        platforms: [
+                            { platform: "instagram", followers: "", profile: "" },
+                            { platform: "youtube", followers: "", profile: "" },
+                            { platform: "facebook", followers: "", profile: "" }
+                        ],
+                        bannerImage: "",
+                        description: "",
+                        packages: []
+                    });
                 }
 
                 let token = jwt.sign({ name: name, email: email, role: role, username: username }, process.env.JWT_SECRET, { expiresIn: '28d' });
