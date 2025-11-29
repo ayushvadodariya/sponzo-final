@@ -141,7 +141,6 @@ export default function Example() {
               </Link>
             </p>
           </div>
-          t
         </div>
       </div>
       {/* <Footer /> */}
