@@ -47,7 +47,7 @@ const Reviews = () => {
                 />
               ))}
             </div>
-            <p className="text-gray-700 mb-6">"{review.text}"</p>
+            <p className="text-gray-700 mb-6">&ldquo;{review.text}&rdquo;</p>
             <div className="flex items-center">
               <div className="relative h-12 w-12 mr-4">
                 <Image

@@ -8,7 +8,7 @@ import Creator from "@/model/Creator";
 import Link from "next/link";
 import useUserStore from "@/store/useUserStore";
 
-const index = ({ creator }) => {
+const Index = ({ creator }) => {
   const router = useRouter();
   const { user, isLoggedIn } = useUserStore();
 
@@ -127,7 +127,7 @@ const index = ({ creator }) => {
   );
 };
 
-export default index;
+export default Index;
 export async function getServerSideProps({ params }) {
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGODB_URI);
